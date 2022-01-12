@@ -2,21 +2,35 @@
 
 layout: col-sidebar
 title: OWASP aegis4j
-tags: example-tag
+tags: java security java-agent devsecops
 level: 2
-type: 
-pitch: A very brief, one-line description of your project
+type: code
+pitch: A Java agent that disables platform features you don't use, before an attacker uses them against you.
 
 ---
 
-This is an example of a Project or Chapter Page.  Please change these items to indicate the actual information you wish to present.  In addition to this information, the 'front-matter' above this text should be modified to reflect your actual information.  An explanation of each of the front-matter items is below:
+Avoid the NEXT Log4Shell vulnerability!
 
-layout: This is the layout used by project and chapter pages.  You should leave this value as col-sidebar
+The Java platform has accrued a number of features over the years. Some of these features are no longer commonly used,
+but their existence remains a security liability, providing attackers with a diverse toolkit to leverage against
+Java-based systems.
 
-title: This is the title of your project or chapter page, usually the name.  For example, OWASP Zed Attack Proxy or OWASP Baltimore
+It is possible to eliminate some of this attack surface area by creating custom JVM images with
+[jlink](https://docs.oracle.com/en/java/javase/17/docs/specs/man/jlink.html), but this is not always feasible or desired.
+Another option is to use the [--limit-modules](https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html) command
+line parameter when running your application, but this is a relatively coarse tool that cannot be used to disable
+individual features like serialization or native process execution.
 
-tags: This is a space-delimited list of tags you associate with your project or chapter.  If you are using tabs, at least one of these tags should be unique in order to be used in the tabs files (an example tab is included in this repo) 
+A third option is aegis4j, a Java agent which can patch key system classes to completely disable a number of standard
+Java features:
 
-level: For projects, this is your project level (2 - Incubator, 3 - Lab, 4 - Flagship)
+- `jndi`: all JNDI functionality (`javax.naming.*`)
+- `rmi`: all RMI functionality (`java.rmi.*`)
+- `process`: all process execution functionality (`Runtime.exec()`, `ProcessBuilder`)
+- `httpserver`: all use of the JDK HTTP server (`com.sun.net.httpserver.*`)
+- `serialization`: all Java serialization (`ObjectInputStream`, `ObjectOutputStream`)
+- `unsafe`: all use of `sun.misc.Unsafe`
+- `scripting`: all JSR 223 scripting (`javax.script.*`)
+- `jshell`: all use of the Java Shell API (`jdk.jshell.*`)
 
-type: code, tool, documentation, or other
+For more information, see the [GitHub repository](https://github.com/gredler/aegis4j).
